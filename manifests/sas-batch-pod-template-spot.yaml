@@ -1,0 +1,317 @@
+apiVersion: v1
+kind: PodTemplate
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"PodTemplate","metadata":{"annotations":{"launcher.sas.com/jobContainerName":"sas-programming-environment","launcher.sas.com/nfs-server":"192.168.2.4","sas.com/certificate-file-format":"pem","sas.com/component-name":"sas-batch","sas.com/component-version":"1.20.1-20230711.1689088244741","sas.com/config-init-mode":"initcontainer","sas.com/kustomize-base":"sas-programming-environment","sas.com/sas-access-config":"true","sas.com/sas-kerberos-config":"true","sas.com/sas-sssd-config":"true","sas.com/tenant-resource":"true","sas.com/tls-mode":"full-stack","sas.com/version":"1.20.1"},"creationTimestamp":"2023-08-08T04:32:26Z","generation":1,"labels":{"launcher.sas.com/job-type":"sas-batch-job","sas.com/admin":"namespace","sas.com/deployment":"sas-viya","sas.com/pod-container-image":"sas-programming-environment","sas.com/template-intent":"sas-launcher","workload.sas.com/class":"compute"},"name":"sas-batch-pod-template-spot","namespace":"hackinsas-viya202307","resourceVersion":"84153","uid":"76736571-cdfe-48cd-9c9b-92e75b9ac7a1"},"template":{"metadata":{"annotations":{"sas.com/certificate-file-format":"pem","sas.com/kustomize-base":"sas-programming-environment","sas.com/tls-enabled-ports":"all","sas.com/tls-mode":"full-stack","sidecar.istio.io/inject":"false"},"creationTimestamp":null,"labels":{"launcher.sas.com/job-type":"sas-batch-job","sas.com/deployment":"sas-viya","workload.sas.com/class":"compute"}},"spec":{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"preference":{"matchExpressions":[{"key":"workload.sas.com/class","operator":"In","values":["compute"]}]},"weight":100},{"preference":{"matchExpressions":[{"key":"workload.sas.com/class","operator":"NotIn","values":["cas","stateless","stateful"]}]},"weight":50}],"requiredDuringSchedulingIgnoredDuringExecution":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"kubernetes.azure.com/mode","operator":"NotIn","values":["system"]}]}]}},"podAffinity":{},"podAntiAffinity":{}},"automountServiceAccountToken":true,"containers":[{"env":[{"name":"SAS_K8S_POD_NAME","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.name"}}},{"name":"SAS_K8S_NAMESPACE","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.namespace"}}},{"name":"SAS_LICENSE","valueFrom":{"secretKeyRef":{"key":"SAS_LICENSE","name":"sas-license-tfmg592khg"}}},{"name":"SASCLOUDNATIVE","value":"1"},{"name":"HOSTIP","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"status.podIP"}}},{"name":"SASREDIRSASOPTS","value":"-noauth"},{"name":"SASREDIRCMDOPTS","value":"-addshell -noauth"}],"envFrom":[{"configMapRef":{"name":"sas-tls-config-dg85g4hfh8"}},{"configMapRef":{"name":"sas-access-config-fd4h6547kt"}},{"configMapRef":{"name":"sas-deployment-metadata-8k5g465btk"}},{"configMapRef":{"name":"sas-launcher-lockdown-config-689f4h5d7h"}},{"configMapRef":{"name":"sas-programming-environment-path-config-889g58mm7g"}},{"configMapRef":{"name":"sas-shared-config-6db52fch9f"}}],"image":"cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-programming-environment:1.44.26-20230718.1689675075878","imagePullPolicy":"IfNotPresent","name":"sas-programming-environment","resources":{},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/tmp","name":"tmp"},{"mountPath":"/sasuser","name":"sasuser"},{"mountPath":"/sashelp","name":"sashelp"},{"mountPath":"/config","name":"config"},{"mountPath":"/opt/sas/viya/config/var","name":"viya"},{"mountPath":"/opt/sas/viya/home/commonfiles","name":"commonfilesvols","readOnly":true},{"mountPath":"/security","name":"security"},{"mountPath":"/opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts","name":"security","subPath":"cacerts"},{"mountPath":"/opt/sas/viya/config/etc/SASSecurityCertificateFramework/private","name":"security","subPath":"private"},{"mountPath":"/mnt/viya-share/data","name":"nfs-data"}]}],"dnsPolicy":"ClusterFirst","imagePullSecrets":[{"name":"sas-image-pull-secrets-t7hggdc9dm"}],"initContainers":[{"env":[{"name":"KUBE_POD_NAME","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.name"}}},{"name":"SAS_CERTFRAME_TOKEN_DIR","value":"/certframe-token"},{"name":"SAS_ADDITIONAL_CA_CERTIFICATES_DIR","value":"/customer-provided-ca-certificates"},{"name":"ENTRYPOINT_ATTEMPTS_MAX","value":"5"}],"envFrom":[{"configMapRef":{"name":"sas-certframe-config-6t84hm65mc"}},{"configMapRef":{"name":"sas-certframe-ingress-certificate-config-6mt27h98mb"}},{"configMapRef":{"name":"sas-certframe-user-config-b8878dt7bh"}}],"image":"cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-certframe:3.42.1-20230707.1688760988939","imagePullPolicy":"IfNotPresent","name":"sas-certframe","resources":{"limits":{"cpu":"500m","memory":"500Mi"},"requests":{"cpu":"50m","memory":"50Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/certframe-token","name":"certframe-token"},{"mountPath":"/security","name":"security"},{"mountPath":"/customer-provided-ca-certificates","name":"customer-provided-ca-certificates"}]},{"env":[{"name":"SAS_K8S_POD_NAME","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.name"}}},{"name":"SAS_K8S_NAMESPACE","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.namespace"}}},{"name":"SSL_CERT_FILE","value":"/security/trustedcerts.pem"}],"envFrom":[{"configMapRef":{"name":"sas-go-config-4m2m8m8662"}},{"configMapRef":{"name":"sas-shared-config-6db52fch9f"}},{"secretRef":{"name":"sas-consul-client"}},{"configMapRef":{"name":"sas-programming-environment-path-config-889g58mm7g"}},{"configMapRef":{"name":"sas-deployment-metadata-8k5g465btk"}},{"configMapRef":{"name":"sas-programming-environment-java-policy-config-fbf6c5c5bb"}},{"configMapRef":{"name":"sas-access-config-fd4h6547kt"}},{"configMapRef":{"name":"sas-batch-server-config-tc4cg5c8cb"}}],"image":"cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-config-init:1.17.2-20230731.1690836618226","imagePullPolicy":"IfNotPresent","name":"sas-config-init","resources":{"limits":{"cpu":"2","memory":"500Mi"},"requests":{"cpu":"50m","memory":"50Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":1001,"runAsUser":1001},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/tmp","name":"config-init-tmp"},{"mountPath":"/config","name":"config"},{"mountPath":"/opt/sas/viya/config/var","name":"viya"},{"mountPath":"/opt/sas/viya/home/commonfiles","name":"commonfilesvols","readOnly":true},{"mountPath":"/security","name":"security"}]}],"restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}},"serviceAccount":"sas-programming-environment","serviceAccountName":"sas-programming-environment","shareProcessNamespace":true,"terminationGracePeriodSeconds":30,"tolerations":[{"effect":"NoSchedule","key":"workload.sas.com/class","operator":"Equal","value":"compute"},{"effect":"NoSchedule","key":"kubernetes.azure.com/scalesetpriority","operator":"Equal","value":"spot"}],"volumes":[{"emptyDir":{},"name":"tmp"},{"emptyDir":{},"name":"config-init-tmp"},{"emptyDir":{},"name":"sasuser"},{"emptyDir":{},"name":"sashelp"},{"emptyDir":{},"name":"config"},{"name":"commonfilesvols","persistentVolumeClaim":{"claimName":"sas-commonfiles","readOnly":true}},{"name":"certframe-token","secret":{"defaultMode":420,"secretName":"sas-certframe-token"}},{"emptyDir":{},"name":"security"},{"configMap":{"defaultMode":420,"name":"sas-customer-provided-ca-certificates-k254h452gd"},"name":"customer-provided-ca-certificates"},{"name":"nfs-data","nfs":{"path":"/export/hackinsas-viya202307/data","server":"192.168.2.4"}},{"hostPath":{"path":"/mnt/sastmp/saswork","type":""},"name":"viya"}]}}}
+    launcher.sas.com/jobContainerName: sas-programming-environment
+    launcher.sas.com/nfs-server: 192.168.2.4
+    sas.com/certificate-file-format: pem
+    sas.com/component-name: sas-batch
+    sas.com/component-version: 1.20.1-20230711.1689088244741
+    sas.com/config-init-mode: initcontainer
+    sas.com/kustomize-base: sas-programming-environment
+    sas.com/sas-access-config: "true"
+    sas.com/sas-kerberos-config: "true"
+    sas.com/sas-sssd-config: "true"
+    sas.com/tenant-resource: "true"
+    sas.com/tls-mode: full-stack
+    sas.com/version: 1.20.1
+  creationTimestamp: "2023-08-08T07:41:46Z"
+  generation: 1
+  labels:
+    launcher.sas.com/job-type: sas-batch-job
+    sas.com/admin: namespace
+    sas.com/deployment: sas-viya
+    sas.com/pod-container-image: sas-programming-environment
+    sas.com/template-intent: sas-launcher
+    workload.sas.com/class: compute
+  name: sas-batch-pod-template-spot
+  namespace: hackinsas-viya202307
+  resourceVersion: "150085"
+  uid: 6d8f7ad1-f40b-469c-b16e-a87cf31e9077
+template:
+  metadata:
+    annotations:
+      sas.com/certificate-file-format: pem
+      sas.com/kustomize-base: sas-programming-environment
+      sas.com/tls-enabled-ports: all
+      sas.com/tls-mode: full-stack
+      sidecar.istio.io/inject: "false"
+    creationTimestamp: null
+    labels:
+      launcher.sas.com/job-type: sas-batch-job
+      sas.com/deployment: sas-viya
+      workload.sas.com/class: compute
+  spec:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - preference:
+            matchExpressions:
+            - key: workload.sas.com/class
+              operator: In
+              values:
+              - compute
+          weight: 100
+        - preference:
+            matchExpressions:
+            - key: workload.sas.com/class
+              operator: NotIn
+              values:
+              - cas
+              - stateless
+              - stateful
+          weight: 50
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.azure.com/mode
+              operator: NotIn
+              values:
+              - system
+      podAffinity: {}
+      podAntiAffinity: {}
+    automountServiceAccountToken: true
+    containers:
+    - env:
+      - name: SAS_K8S_POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SAS_K8S_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      - name: SAS_LICENSE
+        valueFrom:
+          secretKeyRef:
+            key: SAS_LICENSE
+            name: sas-license-tfmg592khg
+      - name: SASCLOUDNATIVE
+        value: "1"
+      - name: HOSTIP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      - name: SASREDIRSASOPTS
+        value: -noauth
+      - name: SASREDIRCMDOPTS
+        value: -addshell -noauth
+      envFrom:
+      - configMapRef:
+          name: sas-tls-config-dg85g4hfh8
+      - configMapRef:
+          name: sas-access-config-fd4h6547kt
+      - configMapRef:
+          name: sas-deployment-metadata-8k5g465btk
+      - configMapRef:
+          name: sas-launcher-lockdown-config-689f4h5d7h
+      - configMapRef:
+          name: sas-programming-environment-path-config-889g58mm7g
+      - configMapRef:
+          name: sas-shared-config-6db52fch9f
+      image: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-programming-environment:1.44.26-20230718.1689675075878
+      imagePullPolicy: IfNotPresent
+      name: sas-programming-environment
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        privileged: false
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /sasuser
+        name: sasuser
+      - mountPath: /sashelp
+        name: sashelp
+      - mountPath: /config
+        name: config
+      - mountPath: /opt/sas/viya/config/var
+        name: viya
+      - mountPath: /opt/sas/viya/home/commonfiles
+        name: commonfilesvols
+        readOnly: true
+      - mountPath: /security
+        name: security
+      - mountPath: /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts
+        name: security
+        subPath: cacerts
+      - mountPath: /opt/sas/viya/config/etc/SASSecurityCertificateFramework/private
+        name: security
+        subPath: private
+      - mountPath: /mnt/viya-share/data
+        name: nfs-data
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: sas-image-pull-secrets-t7hggdc9dm
+    initContainers:
+    - env:
+      - name: KUBE_POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SAS_CERTFRAME_TOKEN_DIR
+        value: /certframe-token
+      - name: SAS_ADDITIONAL_CA_CERTIFICATES_DIR
+        value: /customer-provided-ca-certificates
+      - name: ENTRYPOINT_ATTEMPTS_MAX
+        value: "5"
+      envFrom:
+      - configMapRef:
+          name: sas-certframe-config-6t84hm65mc
+      - configMapRef:
+          name: sas-certframe-ingress-certificate-config-6mt27h98mb
+      - configMapRef:
+          name: sas-certframe-user-config-b8878dt7bh
+      image: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-certframe:3.42.1-20230707.1688760988939
+      imagePullPolicy: IfNotPresent
+      name: sas-certframe
+      resources:
+        limits:
+          cpu: 500m
+          memory: 500Mi
+        requests:
+          cpu: 50m
+          memory: 50Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        privileged: false
+        readOnlyRootFilesystem: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /certframe-token
+        name: certframe-token
+      - mountPath: /security
+        name: security
+      - mountPath: /customer-provided-ca-certificates
+        name: customer-provided-ca-certificates
+    - env:
+      - name: SAS_K8S_POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SAS_K8S_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      - name: SSL_CERT_FILE
+        value: /security/trustedcerts.pem
+      envFrom:
+      - configMapRef:
+          name: sas-go-config-4m2m8m8662
+      - configMapRef:
+          name: sas-shared-config-6db52fch9f
+      - secretRef:
+          name: sas-consul-client
+      - configMapRef:
+          name: sas-programming-environment-path-config-889g58mm7g
+      - configMapRef:
+          name: sas-deployment-metadata-8k5g465btk
+      - configMapRef:
+          name: sas-programming-environment-java-policy-config-fbf6c5c5bb
+      - configMapRef:
+          name: sas-access-config-fd4h6547kt
+      - configMapRef:
+          name: sas-batch-server-config-tc4cg5c8cb
+      image: cr.sas.com/viya-4-x64_oci_linux_2-docker/sas-config-init:1.17.2-20230731.1690836618226
+      imagePullPolicy: IfNotPresent
+      name: sas-config-init
+      resources:
+        limits:
+          cpu: "2"
+          memory: 500Mi
+        requests:
+          cpu: 50m
+          memory: 50Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsGroup: 1001
+        runAsUser: 1001
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: config-init-tmp
+      - mountPath: /config
+        name: config
+      - mountPath: /opt/sas/viya/config/var
+        name: viya
+      - mountPath: /opt/sas/viya/home/commonfiles
+        name: commonfilesvols
+        readOnly: true
+      - mountPath: /security
+        name: security
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: sas-programming-environment
+    serviceAccountName: sas-programming-environment
+    shareProcessNamespace: true
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: workload.sas.com/class
+      operator: Equal
+      value: compute
+    - effect: NoSchedule
+      key: kubernetes.azure.com/scalesetpriority
+      operator: Equal
+      value: spot
+    volumes:
+    - emptyDir: {}
+      name: tmp
+    - emptyDir: {}
+      name: config-init-tmp
+    - emptyDir: {}
+      name: sasuser
+    - emptyDir: {}
+      name: sashelp
+    - emptyDir: {}
+      name: config
+    - name: commonfilesvols
+      persistentVolumeClaim:
+        claimName: sas-commonfiles
+        readOnly: true
+    - name: certframe-token
+      secret:
+        defaultMode: 420
+        secretName: sas-certframe-token
+    - emptyDir: {}
+      name: security
+    - configMap:
+        defaultMode: 420
+        name: sas-customer-provided-ca-certificates-k254h452gd
+      name: customer-provided-ca-certificates
+    - name: nfs-data
+      nfs:
+        path: /export/hackinsas-viya202307/data
+        server: 192.168.2.4
+    - hostPath:
+        path: /mnt/sastmp/saswork
+        type: ""
+      name: viya

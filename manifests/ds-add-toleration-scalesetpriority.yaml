@@ -1,0 +1,30 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: ds-add-tolerations-scalesetpriority
+spec:
+  rules:
+  - name: service-toleration
+    match:
+      any:
+      - resources:
+          names:
+          - sas-workload-orchestrator
+          - "prepull-ds-*"
+          kinds:
+          - DaemonSet
+    preconditions:
+      any:
+      - key: "kubernetes.azure.com/scalesetpriority"
+        operator: AnyNotIn
+        value: "{{ request.object.spec.template.spec.tolerations[].key || `[]` }}"
+    mutate:
+      patchesJson6902: |-
+        - op: add
+          path: "/spec/template/spec/tolerations/-"
+          value:
+            key: kubernetes.azure.com/scalesetpriority
+            operator: Equal
+            value: spot
+            effect: NoSchedule        
+
