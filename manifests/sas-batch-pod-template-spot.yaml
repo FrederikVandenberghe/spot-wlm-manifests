@@ -305,12 +305,12 @@ template:
       name: security
     - configMap:
         defaultMode: 420
-        name: sas-customer-provided-ca-certificates-k254h452gd
+        name: sas-customer-provided-ca-certificates-XXXXX
       name: customer-provided-ca-certificates
     - name: nfs-data
       nfs:
-        path: /export/hackinsas-viya202307/data
-        server: 192.168.2.4
+        path: /export/xxxx/yyyy
+        server: 192.168.X.X
     - hostPath:
         path: /mnt/sastmp/saswork
         type: ""
